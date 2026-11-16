@@ -40,6 +40,24 @@ app.use('/api', apiRateLimiter);
 // 5. Mount API Routes
 app.use('/api', apiRoutes);
 
+// Root Gateway Landing Endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    system: 'Secure AI Docs API Gateway',
+    version: '1.0.0',
+    compliance: 'Section 63 BSA 2023 Evidentiary Standard',
+    healthCheck: '/api/v1/health',
+    endpoints: {
+      auth: '/api/v1/auth',
+      cases: '/api/v1/cases',
+      documents: '/api/v1/documents',
+      audit: '/api/v1/audit',
+      search: '/api/v1/search',
+    },
+  });
+});
+
 // 6. Handle Unknown Route Fallthrough
 app.use('*', (req, res, next) => {
   next(new ApiError(HTTP_STATUS.NOT_FOUND, `API endpoint not found: ${req.method} ${req.originalUrl}`, ERROR_CODES.DOCUMENT_NOT_FOUND));
