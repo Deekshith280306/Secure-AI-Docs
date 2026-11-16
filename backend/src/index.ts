@@ -31,15 +31,8 @@ app.use(
 );
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRouter);
-app.use('/api/docs', docsRouter);
-app.use('/api/audit', auditRouter);
-app.use('/api/ai', aiRouter);
-app.use('/api/test', protectedRouter);
-
 // Healthcheck & readiness endpoint
-app.get('/api/health', (_req: Request, res: Response) => {
+const healthHandler = (_req: Request, res: Response) => {
   res.status(200).json({
     status: 'online',
     system: 'Secure Digital Document Management System (Secure DMS)',
@@ -49,7 +42,41 @@ app.get('/api/health', (_req: Request, res: Response) => {
     dbState: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     complianceStandard: 'BSA 2023 Sec 63 / IEA Sec 65B Ready',
   });
+};
+
+app.get('/', (_req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'online',
+    system: 'Secure AI Docs API Gateway',
+    version: '1.0.0',
+    compliance: 'Section 63 BSA 2023 Evidentiary Standard',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      docs: '/api/docs',
+      audit: '/api/audit',
+      ai: '/api/ai',
+    },
+  });
 });
+
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
+app.get('/api/v1/health', healthHandler);
+
+// Standard API Routes
+app.use('/api/auth', authRouter);
+app.use('/api/docs', docsRouter);
+app.use('/api/audit', auditRouter);
+app.use('/api/ai', aiRouter);
+app.use('/api/test', protectedRouter);
+
+// API v1 compatibility aliases
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/docs', docsRouter);
+app.use('/api/v1/audit', auditRouter);
+app.use('/api/v1/ai', aiRouter);
+app.use('/api/v1/test', protectedRouter);
 
 // Database connection with graceful fallback for local development
 const connectDB = async () => {
