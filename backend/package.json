@@ -1,49 +1,37 @@
 {
-  "name": "secure-ai-docs-backend",
+  "name": "server",
   "version": "1.0.0",
-  "description": "Backend API for Secure AI Docs Digital Document Management System (SIH 26190)",
-  "main": "src/server.js",
-  "type": "commonjs",
+  "description": "Secure DMS Backend API",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "lint": "eslint src/",
-    "test": "jest tests/"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1123.0",
-    "@aws-sdk/s3-request-presigner": "^3.1123.0",
-    "@google/generative-ai": "^0.24.1",
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.6",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.758.0",
+    "@google/genai": "^2.21.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-rate-limit": "^7.3.1",
-    "express-validator": "^7.3.2",
-    "helmet": "^7.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.5.0",
-    "multer": "^2.3.0",
-    "otplib": "^13.5.0",
-    "pdf-lib": "^1.17.1",
-    "pdf-parse": "^2.4.5",
+    "mongoose": "^8.12.0",
     "qrcode": "^1.5.4",
-    "uuid": "^10.0.0"
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
-    "jest": "^30.5.1",
-    "mongodb-memory-server": "^11.2.0",
-    "nodemon": "^3.1.4",
-    "supertest": "^7.2.2"
-  },
-  "jest": {
-    "testMatch": [
-      "<rootDir>/tests/**/*.test.js"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "maxWorkers": 1
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.9",
+    "@types/qrcode": "^1.5.5",
+    "@types/speakeasy": "^2.0.10",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
   }
 }

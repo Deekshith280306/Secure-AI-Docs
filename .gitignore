@@ -1,59 +1,32 @@
 # Dependencies
 node_modules/
-.pnp
-.pnp.js
-
-# Testing and coverage
-coverage/
-.nyc_output/
+*/node_modules/
 
 # Production builds
 dist/
-build/
+*/dist/
 
-# Environment and secrets
+# Local Environment Variables & Secrets
 .env
+*/.env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.pem
-*.key
-*.cert
+.env.*.local
 
-# Logs
-logs/
-*.log
+# Operating System & IDE
+.DS_Store
+.vscode/
+.idea/
+.chrome_tmp/
+__pycache__/
+*.pyc
+
+# Local Case Evidence Vault (Contains sensitive/large binary test uploads)
+vault/
+*/vault/
+sample-evidence/
+
+# Logs & build info
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Uploads and temporary files
-uploads/
-storage/
-backend/storage/
-.vault/
-tmp/
-temp/
-*.tmp
-*.pdf
-*.png
-*.jpg
-*.jpeg
-
-# IDE & OS files
-.DS_Store
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-Thumbs.db
-
-# Documentation Exports
-PROJECT_DOCUMENTATION.md
-
+*.tsbuildinfo
