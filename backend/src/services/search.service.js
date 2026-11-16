@@ -1,7 +1,7 @@
 const Document = require('../models/Document');
 const { Case } = require('../models/Case');
 const vectorService = require('./vector.service');
-const { ApiError } = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 const { HTTP_STATUS, ERROR_CODES } = require('../constants/statusCodes');
 const { ROLES } = require('../constants/roles');
 const logger = require('../config/logger');

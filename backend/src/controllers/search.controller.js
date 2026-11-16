@@ -1,5 +1,5 @@
 const searchService = require('../services/search.service');
-const { ApiError } = require('../utils/ApiError');
+const ApiError = require('../utils/apiError');
 const { HTTP_STATUS } = require('../constants/statusCodes');
 const logger = require('../config/logger');
 
