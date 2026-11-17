@@ -9,6 +9,7 @@ import docsRouter from './routes/docs';
 import auditRouter from './routes/audit';
 import aiRouter from './routes/ai';
 import { LedgerService } from './services/ledger';
+import { KmsService } from './services/kms';
 
 dotenv.config();
 
@@ -32,7 +33,8 @@ app.use(
 app.use(express.json());
 
 // Healthcheck & readiness endpoint
-const healthHandler = (_req: Request, res: Response) => {
+const healthHandler = async (_req: Request, res: Response) => {
+  const kmsDiag = await KmsService.getDiagnostics();
   res.status(200).json({
     status: 'online',
     system: 'Secure Digital Document Management System (Secure DMS)',
@@ -41,6 +43,14 @@ const healthHandler = (_req: Request, res: Response) => {
     dbConnected: mongoose.connection.readyState === 1,
     dbState: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     complianceStandard: 'BSA 2023 Sec 63 / IEA Sec 65B Ready',
+    kms: {
+      status: kmsDiag.status,
+      provider: kmsDiag.provider,
+      masterKeyId: kmsDiag.keyId,
+      algorithm: kmsDiag.envelopeAlgorithm,
+      region: kmsDiag.region,
+      hsmManaged: false, // Software-backed AWS KMS CMK (not CloudHSM) as requested
+    },
   });
 };
 

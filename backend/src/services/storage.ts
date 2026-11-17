@@ -54,11 +54,15 @@ export const StorageService: StorageProvider = {
         },
       });
 
+      const kmsKeyId = process.env.AWS_KMS_KEY_ID || process.env.KMS_KEY_ARN;
+      const sse = kmsKeyId ? 'aws:kms' : 'AES256';
+
       const command = new PutObjectCommand({
         Bucket: process.env.AWS_S3_BUCKET_NAME!,
         Key: storageKey,
         ContentType: mimeType,
-        ServerSideEncryption: 'AES256',
+        ServerSideEncryption: sse,
+        ...(kmsKeyId ? { SSEKMSKeyId: kmsKeyId } : {}),
         Metadata: {
           sha256: clientHash,
         },
@@ -71,7 +75,8 @@ export const StorageService: StorageProvider = {
         provider: 's3',
         headers: {
           'Content-Type': mimeType,
-          'x-amz-server-side-encryption': 'AES256',
+          'x-amz-server-side-encryption': sse,
+          ...(kmsKeyId ? { 'x-amz-server-side-encryption-aws-kms-key-id': kmsKeyId } : {}),
         },
       };
     }
