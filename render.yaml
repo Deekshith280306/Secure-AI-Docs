@@ -1,0 +1,42 @@
+services:
+  # ----------------------------------------------------
+  # Frontend: High-Performance Static Site on Render CDN
+  # ----------------------------------------------------
+  - type: web
+    name: secure-ai-docs-frontend
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://secure-ai-docs.onrender.com/api
+      - key: VITE_API_BASE_URL
+        value: https://secure-ai-docs.onrender.com/api/v1
+      - key: VITE_ENABLE_MOCK_DEMO
+        value: "true"
+
+  # ----------------------------------------------------
+  # Backend: Node.js / Express Web Service
+  # ----------------------------------------------------
+  - type: web
+    name: secure-ai-docs
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: AWS_REGION
+        value: ap-south-1
+      - key: TRUST_PROXY
+        value: "1"
