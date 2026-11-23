@@ -18,6 +18,8 @@ import {
   Cpu,
   Trash2,
   Eye,
+  Video,
+  FileAudio,
 } from 'lucide-react';
 import { AiInspectionModal, DocumentWithAi } from './AiInspectionModal';
 
@@ -493,7 +495,13 @@ export const DocumentList: React.FC<DocumentListProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                    <FileText className="w-5 h-5" />
+                    {doc.mimeType?.startsWith('video/') || doc.category?.toLowerCase().includes('video') ? (
+                      <Video className="w-5 h-5" />
+                    ) : doc.mimeType?.startsWith('audio/') || doc.category?.toLowerCase().includes('audio') ? (
+                      <FileAudio className="w-5 h-5" />
+                    ) : (
+                      <FileText className="w-5 h-5" />
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">

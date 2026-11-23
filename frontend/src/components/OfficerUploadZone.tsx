@@ -218,6 +218,7 @@ export const OfficerUploadZone: React.FC<OfficerUploadZoneProps> = ({
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 text-slate-900 dark:text-slate-100 text-xs transition"
           >
             <option>First Information Report (FIR)</option>
+            <option>CCTV Video / Audio Recording</option>
             <option>Forensic Lab Report</option>
             <option>Charge Sheet (Section 173)</option>
             <option>Seizure Memo / Panchnama</option>
